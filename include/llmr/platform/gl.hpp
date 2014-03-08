@@ -25,6 +25,15 @@
     #else
         #error Unsupported Apple platform
     #endif
+#elif __ANDROID__
+    #if DYNAMIC_ES3
+    #include "gl3stub.h"
+    #else
+    #include <EGL/egl.h>
+    #endif
+    #define glGenVertexArrays glGenVertexArraysOES
+    #define glBindVertexArray glBindVertexArrayOES
+    #define glDeleteVertexArrays glDeleteVertexArraysOES
 #else
     #define GL_GLEXT_PROTOTYPES
     #include <GL/gl.h>
