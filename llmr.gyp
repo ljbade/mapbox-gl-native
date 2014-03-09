@@ -5,8 +5,8 @@
   ],
   'targets': [
     {
-      'target_name': 'llmr-x86',
-      'product_name': 'llmr-x86',
+      'target_name': 'llmr',
+      'product_name': 'llmr',
       'type': 'static_library',
       'sources': [
         '<!@(find src -name "*.cpp")',

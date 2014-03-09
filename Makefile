@@ -7,7 +7,7 @@ V ?= 1
 all: llmr
 
 llmr: config.gypi src llmr.gyp
-	$(MAKE) -C out BUILDTYPE=Release V=$(V) llmr-x86
+	$(MAKE) -C out BUILDTYPE=Release V=$(V) llmr
 
 # build OS X app with pure make
 app: config.gypi src macosx/llmr-app.gyp
@@ -19,6 +19,37 @@ linux: config.gypi src linux/llmr-app.gyp
 	deps/run_gyp linux/llmr-app.gyp -Goutput_dir=./out/ --depth=. --generator-output=./build/linux-make -f make
 	make -C build/linux-make V=$(V)
 	./build/linux-make/out/Release/llmr.app
+
+ndk/android-ndk-r9c:
+	mkdir -p ndk
+	cd ndk && \
+	curl -O http://dl.google.com/android/ndk/android-ndk-r9c-darwin-x86_64.tar.bz2 && \
+	tar -xf android-ndk-r9c-darwin-x86_64.tar.bz2
+
+ndk/android-ndk-r9c/active-platform: ndk/android-ndk-r9c
+	export API_LEVEL="android-19" && \
+	export ANDROID_CROSS_COMPILER="arm-linux-androideabi-clang3.3" && \
+	export NDK_PATH=ndk/android-ndk-r9c && \
+	export PLATFORM_PREFIX="$${NDK_PATH}/active-platform" && \
+	"$${NDK_PATH}/build/tools/make-standalone-toolchain.sh"  \
+	  --toolchain="$${ANDROID_CROSS_COMPILER}" \
+	  --install-dir="$${PLATFORM_PREFIX}" \
+	  --stl=gnustl \
+	  --arch=arm \
+	  --platform="$${API_LEVEL}"
+
+android-osx: ndk/android-ndk-r9c/active-platform config.gypi src linux/llmr-app.gyp
+	export CXX=arm-linux-androideabi-clang++ && \
+	export CC=arm-linux-androideabi-clang && \
+	export LD="arm-linux-androideabi-ld" && \
+	export AR="arm-linux-androideabi-ar" && \
+	export RANLIB="arm-linux-androideabi-ranlib" && \
+	export NDK_PATH=ndk/android-ndk-r9c && \
+	export PLATFORM_PREFIX="`pwd`/$${NDK_PATH}/active-platform/" && \
+	export PATH=$$PATH:$${PLATFORM_PREFIX}/bin && \
+	echo $$PATH && \
+	export ANDROID_BUILD_TOP=$${PLATFORM_PREFIX} && \
+	deps/run_gyp llmr.gyp -Goutput_dir=./out/ --depth=. -f android
 
 
 # build OS X app with Xcode
@@ -63,13 +94,15 @@ clean:
 	-rm -rf build
 	-rm -rf macosx/build
 	-rm -rf ios/build
+	-rm -rf llmr.xcodeproj
+	-rm -rf macosx/llmr-app.xcodeproj
+	-rm -rf ios/llmr-app.xcodeproj
+	-rm -f llmr*.target.mk
+	-rm -f GypAndroid.mk
 
 distclean:
 	-rm -f config.gypi
 	-rm -f config.mk
-	-rm -rf llmr.xcodeproj
-	-rm -rf macosx/llmr-app.xcodeproj
-	-rm -rf ios/llmr-app.xcodeproj
 
 test: all
 	echo test

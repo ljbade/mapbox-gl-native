@@ -46,7 +46,7 @@
           'CLANG_ENABLE_OBJC_ARC': 'YES'
         },
         "dependencies": [
-            "../llmr.gyp:llmr-x86"
+            "../llmr.gyp:llmr"
         ]
     }
   ]
