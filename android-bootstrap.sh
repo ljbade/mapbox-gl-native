@@ -1,8 +1,8 @@
 curl -O http://dl.google.com/android/ndk/android-ndk-r9c-darwin-x86_64.tar.bz2
 tar -xf android-ndk-r9c-darwin-x86_64.tar.bz2
 
-export NDK_PATH=$(pwd)/android-ndk-r9c
-export ANDROID_PATH=$(pwd)/android-ndk-r9c
+export NDK_PATH=$(pwd)/ndk/android-ndk-r9c
+export ANDROID_PATH=$(pwd)/ndk/android-ndk-r9c
 export NDK_PROJECT_PATH=$(pwd)
 export APP_BUILD_SCRIPT=$(pwd)Android.mk
 
@@ -15,7 +15,8 @@ export PLATFORM_PREFIX="${NDK_PATH}/platforms/android-19/"
 
 # NOTE: make-standalone-toolchain.sh --help for options
 ${NDK_PATH}/build/tools/make-standalone-toolchain.sh  \
-  --toolchain=${ANDROID_CROSS_COMPILER} \
+  --toolchain=arm-linux-androideabi-4.8 \
+  --llvm-version=3.3 \
   --install-dir="${PLATFORM_PREFIX}" \
   --stl=gnustl \
   --arch=arm \

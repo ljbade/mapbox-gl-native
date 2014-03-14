@@ -1,6 +1,7 @@
 mkdir -p libpngtmp
 
 echo "setting platform ${PLATFORM_PREFIX}"
+export PATH="${PLATFORM_PREFIX}/bin":$PATH
 cd libpngtmp
 
 
@@ -9,7 +10,8 @@ cd libpngtmp
 cd libpng-1.6.9
 ./configure \
     --host=arm-linux-androideabi \
-    CC=arm-linux-androideabi-clang3.3 \
+    CC=arm-linux-androideabi-clang \
+    LD=arm-linux-androideabi-ld \
     STRIP=arm-linux-androideabi-strip \
     --prefix=$PLATFORM_PREFIX \
     AR=arm-linux-androideabi-ar \
@@ -17,4 +19,4 @@ cd libpng-1.6.9
 make
 make install
 cd ../../
-cp ./android-ndk-r9c/platforms/android-19/lib/libpng* jni
+cp $PLATFORM_PREFIX/lib/libpng* jni/
