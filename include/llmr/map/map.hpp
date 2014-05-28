@@ -11,6 +11,7 @@
 #include <llmr/renderer/painter.hpp>
 #include <llmr/util/noncopyable.hpp>
 #include <llmr/util/texturepool.hpp>
+#include <llmr/util/definitions.hpp>
 
 #include <cstdint>
 #include <string>
@@ -123,8 +124,6 @@ private:
     // Prepares a map render by updating the tiles we need for the current view, as well as updating
     // the stylesheet.
     void prepare();
-
-    enum RenderPass { Opaque, Translucent };
 
     // Unconditionally performs a render with the current map state.
     void render();

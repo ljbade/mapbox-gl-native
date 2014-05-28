@@ -546,7 +546,7 @@ void Map::renderLayers(const std::vector<LayerDescription>& layers) {
     for (riterator it = layers.rbegin(), end = layers.rend(); it != end; ++it, ++i) {
         painter.setOpaque();
         painter.setStrata(i * strata_thickness);
-        renderLayer(*it, Opaque);
+        renderLayer(*it, RenderPass::Opaque);
     }
     if (debug::renderTree) {
         std::cout << std::string(--indent * 4, ' ') << "}" << std::endl;
@@ -563,7 +563,7 @@ void Map::renderLayers(const std::vector<LayerDescription>& layers) {
     for (iterator it = layers.begin(), end = layers.end(); it != end; ++it, --i) {
         painter.setTranslucent();
         painter.setStrata(i * strata_thickness);
-        renderLayer(*it, Translucent);
+        renderLayer(*it, RenderPass::Translucent);
     }
     if (debug::renderTree) {
         std::cout << std::string(--indent * 4, ' ') << "}" << std::endl;
@@ -589,10 +589,13 @@ bool is_invisible(const Styles &styles, const LayerDescription &layer_desc) {
     return !it->second.isVisible();
 }
 
+
+static StyleClass defaultStyleClass;
+
 void Map::renderLayer(const LayerDescription& layer_desc, RenderPass pass) {
     if (layer_desc.child_layer.size()) {
         // This is a layer group. We render them during our translucent render pass.
-        if (pass == Translucent) {
+        if (pass == RenderPass::Translucent) {
             auto it = find_style(style.computed.composites, layer_desc);
             const CompositeProperties &properties = (it != style.computed.composites.end()) ? it->second : defaultCompositeProperties;
             if (properties.isVisible()) {
@@ -629,28 +632,24 @@ void Map::renderLayer(const LayerDescription& layer_desc, RenderPass pass) {
 
             // Abort early if we can already deduce from the bucket type that
             // we're not going to render anything anyway during this pass.
-            switch (bucket_desc.type) {
-                case BucketType::Fill:
-                    if (is_invisible(style.computed.fills, layer_desc)) return;
-                    break;
-                case BucketType::Line:
-                    if (pass == Opaque) return;
-                    if (is_invisible(style.computed.lines, layer_desc)) return;
-                    break;
-                case BucketType::Icon:
-                    if (pass == Opaque) return;
-                    if (is_invisible(style.computed.icons, layer_desc)) return;
-                    break;
-                case BucketType::Text:
-                    if (pass == Opaque) return;
-                    if (is_invisible(style.computed.texts, layer_desc)) return;
-                    break;
-                case BucketType::Raster:
-                    if (pass == Translucent) return;
-                    if (is_invisible(style.computed.rasters, layer_desc)) return;
-                    break;
-                default:
-                    break;
+            if (!bucket_desc.hasPass(pass)) {
+                return;
+            }
+
+            // Find the style class
+            const StyleClass &style_class = [&]{
+                auto style_it = style.computed.styles.find(layer_desc.name);
+                if (style_it != style.computed.styles.end()) {
+                    return style_it->second;
+                } else {
+                    return defaultStyleClass;
+                }
+            }();
+
+            // Abort early if the layer is going to be invisible anyway.
+            if (style_class.get(StylePropertyKey::Enabled, bool(true)) == false ||
+                style_class.get(StylePropertyKey::Opacity, float(1)) <= 0) {
+                return;
             }
 
             // Find the source and render all tiles in it.

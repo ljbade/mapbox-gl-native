@@ -6,7 +6,7 @@ using namespace llmr;
 
 void Painter::renderText(TextBucket& bucket, const std::string& layer_name, const Tile::ID& id) {
     // Abort early.
-    if (pass == Opaque) return;
+    if (pass == RenderPass::Opaque) return;
     if (!bucket.hasData()) return;
 
     const std::unordered_map<std::string, TextProperties> &text_properties = map.getStyle().computed.texts;

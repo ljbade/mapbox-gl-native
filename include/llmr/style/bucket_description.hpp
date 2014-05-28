@@ -6,6 +6,7 @@
 #include <cmath>
 
 #include "value.hpp"
+#include <llmr/util/definitions.hpp>
 
 namespace llmr {
 
@@ -99,6 +100,8 @@ public:
 
     // Specifies how the geometry for this bucket should be created
     BucketGeometryDescription geometry;
+
+    bool hasPass(RenderPass pass) const;
 };
 
 std::ostream& operator<<(std::ostream&, const BucketDescription& bucket);

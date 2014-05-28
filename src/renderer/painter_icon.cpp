@@ -9,7 +9,7 @@ using namespace llmr;
 void Painter::renderIcon(IconBucket& bucket, const std::string& layer_name, const Tile::ID& id) {
     // Abort early.
     if (!bucket.hasData()) return;
-    if (pass == Opaque) return;
+    if (pass == RenderPass::Opaque) return;
 
     const std::unordered_map<std::string, IconProperties> &icon_properties = map.getStyle().computed.icons;
     const std::unordered_map<std::string, IconProperties>::const_iterator icon_properties_it = icon_properties.find(layer_name);

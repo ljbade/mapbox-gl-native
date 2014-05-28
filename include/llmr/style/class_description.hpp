@@ -17,6 +17,7 @@ public:
     std::map<std::string, TextClass> text;
     std::map<std::string, RasterClass> raster;
     std::map<std::string, CompositeClass> composite;
+    std::map<std::string, StyleClass> styles;
 };
 
 

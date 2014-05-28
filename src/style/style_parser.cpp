@@ -2,6 +2,8 @@
 #include <llmr/util/constants.hpp>
 #include <csscolorparser/csscolorparser.hpp>
 
+#include <unordered_map>
+
 using namespace llmr;
 
 using JSVal = const rapidjson::Value&;
@@ -309,6 +311,9 @@ void StyleParser::parseClass(const std::string &name, JSVal value, ClassDescript
             return;
         }
 
+        // Parse the generic class that holds all properties.
+        class_desc.styles.emplace(name, std::forward<StyleClass>(parseClass(value)));
+
         BucketType type = bucket_it->second.type;
         if (type == BucketType::Fill) {
             class_desc.fill.insert({ name, std::forward<FillClass>(parseFillClass(value)) });
@@ -407,7 +412,7 @@ Color StyleParser::parseColor(JSVal value) {
              css_color.a}};
 }
 
-FunctionProperty::fn StyleParser::parseFunctionType(JSVal type) {
+FunctionEvaluator StyleParser::parseFunctionType(JSVal type) {
     if (type.IsString()) {
         std::string t { type.GetString(), type.GetStringLength() };
         if (t == "constant") {
@@ -478,25 +483,189 @@ FunctionProperty StyleParser::parseFunction(JSVal value) {
 }
 
 boost::optional<PropertyTransition> StyleParser::parseTransition(JSVal value, std::string property_name) {
-    uint16_t duration = 0, delay = 0;
     std::string transition_property = std::string("transition-").append(property_name);
     if (value.HasMember(transition_property.c_str())) {
-        JSVal elements = value[transition_property.c_str()];
-        if (elements.IsObject()) {
-            if (elements.HasMember("duration") && elements["duration"].IsNumber()) {
-                duration = elements["duration"].GetUint();
-            }
-            if (elements.HasMember("delay") && elements["delay"].IsNumber()) {
-                delay = elements["delay"].GetUint();
-            }
+        return parseTransition(value[transition_property.c_str()]);
+    } else {
+        return {};
+    }
+}
+
+PropertyTransition StyleParser::parseTransition(JSVal elements) {
+    uint16_t duration = 0, delay = 0;
+
+    if (elements.IsObject()) {
+        if (elements.HasMember("duration") && elements["duration"].IsNumber()) {
+            duration = elements["duration"].GetUint();
+        }
+        if (elements.HasMember("delay") && elements["delay"].IsNumber()) {
+            delay = elements["delay"].GetUint();
         }
     }
 
-    if (duration || delay) {
-        return boost::optional<PropertyTransition>(PropertyTransition { duration, delay });
-    } else {
-        return boost::optional<PropertyTransition>();
+    return { duration, delay };
+}
+
+
+
+StyleClass StyleParser::parseClass(JSVal value) {
+    StyleClass klass;
+
+    if (value.HasMember("enabled")) {
+        klass.set(StylePropertyKey::Enabled, parseFunction(value["enabled"]));
     }
+
+    if (value.HasMember("translate")) {
+        const std::vector<FunctionProperty> values = parseArray(value["translate"], 2);
+        if (values.size() >= 1) {
+            klass.set(StylePropertyKey::TranslateX, values[0]);
+        }
+        if (values.size() >= 2) {
+            klass.set(StylePropertyKey::TranslateY, values[1]);
+        }
+    }
+
+    if (value.HasMember("transition-translate")) {
+        klass.set(TransitionablePropertyKey::Translate, parseTransition(value["transition-translate"]));
+    }
+
+    if (value.HasMember("translate-anchor")) {
+        klass.set(StylePropertyKey::TranslateAnchor, parseTranslateAnchor(value["translate-anchor"]));
+    }
+
+    if (value.HasMember("opacity")) {
+        klass.set(StylePropertyKey::Opacity, parseFunction(value["opacity"]));
+    }
+
+    if (value.HasMember("transition-opacity")) {
+        klass.set(TransitionablePropertyKey::Opacity, parseTransition(value["transition-opacity"]));
+    }
+
+    if (value.HasMember("prerender")) {
+        klass.set(StylePropertyKey::Prerender, parseBoolean(value["prerender"]));
+    }
+
+    if (value.HasMember("prerender-buffer")) {
+        klass.set(StylePropertyKey::PrerenderBuffer, float(toNumber<double>(parseValue(value["prerender-buffer"]))));
+    }
+
+    if (value.HasMember("prerender-size")) {
+        klass.set(StylePropertyKey::PrerenderSize, toNumber<uint64_t>(parseValue(value["prerender-size"])));
+    }
+
+    if (value.HasMember("prerender-blur")) {
+        klass.set(StylePropertyKey::PrerenderBlur, toNumber<uint64_t>(parseValue(value["prerender-blur"])));
+    }
+
+    if (value.HasMember("winding")) {
+        throw std::runtime_error("winding in stylesheets not yet supported");
+    }
+
+    if (value.HasMember("color")) {
+        klass.set(StylePropertyKey::FillColor, parseColor(value["color"]));
+    }
+
+    if (value.HasMember("transition-color")) {
+        klass.set(TransitionablePropertyKey::FillColor, parseTransition(value["transition-color"]));
+    }
+
+    if (value.HasMember("stroke")) {
+        klass.set(StylePropertyKey::StrokeColor, parseColor(value["stroke"]));
+    }
+
+    if (value.HasMember("transition-stroke")) {
+        klass.set(TransitionablePropertyKey::StrokeColor, parseTransition(value["transition-stroke"]));
+    }
+
+    if (value.HasMember("antialias")) {
+        klass.set(StylePropertyKey::Antialias, parseBoolean(value["antialias"]));
+    }
+
+    if (value.HasMember("image")) {
+        klass.set(StylePropertyKey::Image, parseString(value["image"]));
+    }
+
+    if (value.HasMember("dasharray")) {
+        const std::vector<FunctionProperty> values = parseArray(value["dasharray"], 2);
+        if (values.size() >= 2) {
+            klass.set(StylePropertyKey::DashArrayLand, values[0]);
+            klass.set(StylePropertyKey::DashArrayGap, values[1]);
+        }
+    }
+
+    if (value.HasMember("width")) {
+        klass.set(StylePropertyKey::Width, parseFunction(value["width"]));
+    }
+
+    if (value.HasMember("transition-width")) {
+        klass.set(TransitionablePropertyKey::Width, parseTransition(value["transition-width"]));
+    }
+
+    if (value.HasMember("transition-dasharray")) {
+        klass.set(TransitionablePropertyKey::DashArray, parseTransition(value["transition-dasharray"]));
+    }
+
+    if (value.HasMember("image")) {
+        klass.set(StylePropertyKey::Image, parseString(value["image"]));
+    }
+
+    if (value.HasMember("size")) {
+        klass.set(StylePropertyKey::Size, parseFunction(value["size"]));
+    }
+
+    if (value.HasMember("radius")) {
+        klass.set(StylePropertyKey::Radius, parseFunction(value["radius"]));
+    }
+
+    if (value.HasMember("transition-radius")) {
+        klass.set(TransitionablePropertyKey::Radius, parseTransition(value["transition-radius"]));
+    }
+
+    if (value.HasMember("blur")) {
+        klass.set(StylePropertyKey::Blur, parseFunction(value["blur"]));
+    }
+
+    if (value.HasMember("transition-blur")) {
+        klass.set(TransitionablePropertyKey::Blur, parseTransition(value["transition-blur"]));
+    }
+
+    if (value.HasMember("stroke")) {
+        klass.set(StylePropertyKey::Halo, parseColor(value["stroke"]));
+    }
+
+    if (value.HasMember("transition-stroke")) {
+        klass.set(TransitionablePropertyKey::Halo, parseTransition(value["transition-stroke"]));
+    }
+
+    if (value.HasMember("strokeWidth")) {
+        klass.set(StylePropertyKey::HaloRadius, parseFunction(value["strokeWidth"]));
+    }
+
+    if (value.HasMember("transition-strokeWidth")) {
+        klass.set(TransitionablePropertyKey::HaloRadius, parseTransition(value["transition-strokeWidth"]));
+    }
+
+    if (value.HasMember("strokeBlur")) {
+        klass.set(StylePropertyKey::HaloBlur, parseFunction(value["strokeBlur"]));
+    }
+
+    if (value.HasMember("transition-strokeBlur")) {
+        klass.set(TransitionablePropertyKey::HaloBlur, parseTransition(value["transition-strokeBlur"]));
+    }
+
+    if (value.HasMember("size")) {
+        klass.set(StylePropertyKey::Size, parseFunction(value["size"]));
+    }
+
+    if (value.HasMember("rotate")) {
+        klass.set(StylePropertyKey::Rotate, parseFunction(value["rotate"]));
+    }
+
+    if (value.HasMember("alwaysVisible")) {
+        klass.set(StylePropertyKey::AlwaysVisible, parseFunction(value["alwaysVisible"]));
+    }
+
+    return klass;
 }
 
 void StyleParser::parseGenericClass(GenericClass &klass, JSVal value) {

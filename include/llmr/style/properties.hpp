@@ -6,7 +6,10 @@
 #include <string>
 #include <limits>
 #include <set>
+#include <map>
 #include <type_traits>
+
+#include <llmr/util/variant.hpp>
 
 #include <boost/optional.hpp>
 
@@ -75,15 +78,90 @@ float exponential(float z, const std::vector<float>& values);
 
 }
 
-struct FunctionProperty {
-    typedef float (*fn)(float z, const std::vector<float>& values);
+typedef float (*FunctionEvaluator)(float z, const std::vector<float>& values);
 
-    fn function;
+struct FunctionProperty {
+    FunctionEvaluator function;
     std::vector<float> values;
 
     inline FunctionProperty() : function(&functions::null) {}
     inline FunctionProperty(float value) : function(&functions::constant), values(1, value) {}
     template <typename T> inline T evaluate(float z) const { return function(z, values); }
+};
+
+
+typedef util::variant<
+    bool,
+    uint64_t,
+    float,
+    std::string,
+    Color,
+    TranslateAnchor,
+    Winding,
+    FunctionProperty
+> StyleValue;
+
+enum class StylePropertyKey {
+    Enabled,
+    TranslateX,
+    TranslateY,
+    TranslateAnchor,
+    Opacity,
+    Prerender,
+    PrerenderBuffer,
+    PrerenderSize,
+    PrerenderBlur,
+    FillColor,
+    StrokeColor,
+    Winding,
+    Color,
+    Size,
+    Image,
+    Radius,
+    Blur,
+    Width,
+    Offset,
+    Antialias,
+    Halo,
+    HaloRadius,
+    HaloBlur,
+    AlwaysVisible,
+    Rotate,
+    DashArrayLand,
+    DashArrayGap
+};
+
+class StyleClass {
+public:
+    template <typename T>
+    inline const T &get(StylePropertyKey property, const T& defaultValue) const {
+        const auto it = values.find(property);
+        if (it == values.end() || !it->second.is<T>()) {
+            return defaultValue;
+        } else {
+            return it->second.get<T>();
+        }
+    }
+
+    template <typename T>
+    inline void set(StylePropertyKey property, const T& value) {
+        values.emplace(property, value);
+    }
+
+    inline void set(TransitionablePropertyKey property, const boost::optional<PropertyTransition> &transition) {
+        if (transition) {
+            transitions.emplace(property, transition.get());
+        }
+    }
+
+    inline const std::map<StylePropertyKey, StyleValue> &getValues() const {
+        return values;
+    }
+
+private:
+    std::map<StylePropertyKey, StyleValue> values;
+    std::map<TransitionablePropertyKey, PropertyTransition> transitions;
+
 };
 
 struct GenericClass {

@@ -29,3 +29,23 @@ std::ostream& llmr::operator<<(std::ostream& os, BucketType type) {
         default: os << "<unknown>"; return os;
     }
 }
+
+using namespace llmr;
+
+bool BucketDescription::hasPass(RenderPass pass) const {
+    switch (type) {
+        case BucketType::Line:
+        case BucketType::Icon:
+        case BucketType::Text:
+            if (pass == RenderPass::Opaque) return false;
+            else return true;
+
+        case BucketType::Raster:
+            if (pass == RenderPass::Translucent) return false;
+            return true;
+
+        case BucketType::Fill:
+        default:
+            return true;
+    }
+}

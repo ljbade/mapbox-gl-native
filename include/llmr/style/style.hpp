@@ -59,6 +59,7 @@ public:
         std::unordered_map<std::string, TextProperties> texts;
         std::unordered_map<std::string, RasterProperties> rasters;
         std::unordered_map<std::string, CompositeProperties> composites;
+        std::unordered_map<std::string, StyleClass> styles;
         std::unordered_map<std::string, std::unordered_map<TransitionablePropertyKey, std::string>> effective_classes;
     } computed;
 

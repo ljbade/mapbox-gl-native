@@ -6,7 +6,7 @@ using namespace llmr;
 
 void Painter::renderLine(LineBucket& bucket, const std::string& layer_name, const Tile::ID& id) {
     // Abort early.
-    if (pass == Opaque) return;
+    if (pass == RenderPass::Opaque) return;
     if (!bucket.hasData()) return;
 
     const std::unordered_map<std::string, LineProperties> &line_properties = map.getStyle().computed.lines;

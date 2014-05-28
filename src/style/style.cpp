@@ -99,6 +99,31 @@ void Style::cascade(float z) {
         // Skip if not enabled.
         if (appliedClasses.find(class_name) == appliedClasses.end()) continue;
 
+
+        // Cascade style classes.
+        for (const auto &pair : sheetClass.styles) {
+            const std::string& layer_name = pair.first;
+            const StyleClass& generic_style = pair.second;
+
+            StyleClass &style = computed.styles[layer_name];
+
+            for (const auto &kv : generic_style.getValues()) {
+                if (kv.second.is<FunctionProperty>()) {
+                    switch (kv.first) {
+                    case StylePropertyKey::Enabled:
+                    case StylePropertyKey::Antialias:
+                    case StylePropertyKey::AlwaysVisible:
+                        style.set(kv.first, kv.second.get<FunctionProperty>().evaluate<bool>(z));
+                    default:
+                        style.set(kv.first, kv.second.get<FunctionProperty>().evaluate<float>(z));
+                    }
+                } else {
+                    style.set(kv.first, kv.second);
+                }
+            }
+        }
+
+
         // Cascade fill classes.
         for (const auto& fill_pair : sheetClass.fill) {
             const std::string& layer_name = fill_pair.first;

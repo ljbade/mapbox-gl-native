@@ -31,6 +31,7 @@ private:
                     const std::map<std::string, std::string> &layerBuckets);
 
     void parseGenericClass(GenericClass &klass, JSVal value);
+    StyleClass parseClass(JSVal value);
     FillClass parseFillClass(JSVal value);
     LineClass parseLineClass(JSVal value);
     IconClass parseIconClass(JSVal value);
@@ -45,8 +46,9 @@ private:
     std::vector<FunctionProperty> parseArray(JSVal value, uint16_t expected_count);
     Color parseColor(JSVal value);
     Value parseValue(JSVal value);
-    FunctionProperty::fn parseFunctionType(JSVal type);
+    FunctionEvaluator parseFunctionType(JSVal type);
     FunctionProperty parseFunction(JSVal value);
+    PropertyTransition parseTransition(JSVal elements);
     boost::optional<PropertyTransition> parseTransition(JSVal value, std::string property_name);
 
 private:
