@@ -4,7 +4,12 @@ BUILDTYPE ?= Release
 PYTHON ?= python
 V ?= 1
 
-all: llmr
+all: setup
+
+setup: config.gypi
+
+config.gypi:
+	./setup-libraries.sh
 
 # Builds the regular library
 llmr: config.gypi llmr.gyp node
@@ -100,6 +105,8 @@ clean: clear_xcode_cache
 	-rm -f ./src/style/resources.cpp
 
 distclean: clean
-	-rm -rf ./build
+	-rm -rf ./config.mk
+	-rm -rf ./config.gypi
+	-rm -rf ./mapnik-packaging/osx/out/
 
 .PHONY: llmr test linux
