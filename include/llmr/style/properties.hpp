@@ -111,10 +111,10 @@ enum class StylePropertyKey {
     PrerenderBuffer,
     PrerenderSize,
     PrerenderBlur,
-    FillColor,
+    Color,
     StrokeColor,
     Winding,
-    Color,
+    IconColor,
     Size,
     Image,
     Radius,
@@ -130,6 +130,39 @@ enum class StylePropertyKey {
     DashArrayLand,
     DashArrayGap
 };
+
+
+
+struct StylePropertyDefault {
+    static constexpr bool Enabled() { return true; }
+    static constexpr float TranslateX() { return 0; }
+    static constexpr float TranslateY() { return 0; }
+    static constexpr TranslateAnchor TranslateAnchor() { return TranslateAnchor::Map; }
+    static constexpr float Opacity() { return 1; }
+    static constexpr bool Prerender() { return 0; }
+    static constexpr float PrerenderBuffer() { return 1.0f / 32.0f; }
+    static constexpr uint64_t PrerenderSize() { return 256; }
+    static constexpr uint64_t PrerenderBlur() { return 0; }
+    // static constexpr Color FillColor() { return   // static constexpr float StrokeColor() { return 0; }
+    // static constexpr float Winding() { return 0; }
+    // static constexpr float IconColor() { return 0; }
+    // static constexpr float Size() { return 0; }
+    // static constexpr float Image() { return 0; }
+    // static constexpr float Radius() { return 0; }
+    // static constexpr float Blur() { return 0; }
+    static constexpr float Width() { return 0; }
+    static constexpr float Offset() { return 0; }
+    static constexpr Color LineColor() { return {{ 0, 0, 0, 1 }}; }
+    // static constexpr float Antialias() { return 0; }
+    // static constexpr float Halo() { return 0; }
+    // static constexpr float HaloRadius() { return 0; }
+    // static constexpr float HaloBlur() { return 0; }
+    // static constexpr float AlwaysVisible() { return 0; }
+    // static constexpr float Rotate() { return 0; }
+    static constexpr float DashArrayLand() { return 1; }
+    static constexpr float DashArrayGap() { return -1; }
+};
+
 
 class StyleClass {
 public:

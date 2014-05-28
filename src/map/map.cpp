@@ -661,7 +661,7 @@ void Map::renderLayer(const LayerDescription& layer_desc, RenderPass pass) {
                 }
 
                 const std::unique_ptr<Source> &source = source_it->second;
-                source->render(layer_desc, bucket_desc);
+                source->render(layer_desc, bucket_desc, style_class);
             } else {
                 if (debug::renderWarnings) {
                     fprintf(stderr, "[WARNING] can't find source '%s' required for bucket '%s'\n",

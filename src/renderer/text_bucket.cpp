@@ -138,9 +138,9 @@ void TextBucket::addFeature(const VectorTileFeature &feature,
     }
 }
 
-void TextBucket::render(Painter &painter, const std::string &layer_name,
-                        const Tile::ID &id) {
-    painter.renderText(*this, layer_name, id);
+void TextBucket::render(Painter &painter, const StyleClass &style_class,
+                        const std::string &layer_name, const Tile::ID &id) {
+    painter.renderText(*this, style_class, layer_name, id);
 }
 
 bool TextBucket::hasData() const {

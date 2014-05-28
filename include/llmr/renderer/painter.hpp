@@ -64,7 +64,7 @@ public:
     void changeMatrix();
 
     // Renders a particular layer from a tile.
-    void renderTileLayer(const Tile& tile, const LayerDescription &layer_desc);
+    void renderTileLayer(const Tile& tile, const LayerDescription &layer_desc, const StyleClass &style_class);
 
     // Renders debug information for a tile.
     void renderTileDebug(const Tile& tile);
@@ -78,12 +78,14 @@ public:
 
     void renderDebugText(DebugBucket& bucket);
     void renderDebugText(const std::vector<std::string> &strings);
+
     void renderFill(FillBucket& bucket, const FillProperties& properties, const Tile::ID& id, const mat4 &mat);
-    void renderFill(FillBucket& bucket, const std::string& layer_name, const Tile::ID& id);
-    void renderLine(LineBucket& bucket, const std::string& layer_name, const Tile::ID& id);
-    void renderIcon(IconBucket& bucket, const std::string& layer_name, const Tile::ID& id);
-    void renderText(TextBucket& bucket, const std::string& layer_name, const Tile::ID& id);
-    void renderRaster(RasterBucket& bucket, const std::string& layer_name, const Tile::ID& id);
+    void renderFill(FillBucket& bucket, const StyleClass &style_class, const std::string& layer_name, const Tile::ID& id);
+    void renderLine(LineBucket& bucket, const StyleClass &style_class, const std::string& layer_name, const Tile::ID& id);
+    void renderIcon(IconBucket& bucket, const StyleClass &style_class, const std::string& layer_name, const Tile::ID& id);
+    void renderText(TextBucket& bucket, const StyleClass &style_class, const std::string& layer_name, const Tile::ID& id);
+    void renderRaster(RasterBucket& bucket, const StyleClass &style_class, const std::string& layer_name, const Tile::ID& id);
+
 
     void preparePrerender(const GenericProperties &properties);
     void finishPrerender(const GenericProperties &properties);

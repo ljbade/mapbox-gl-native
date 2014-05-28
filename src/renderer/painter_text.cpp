@@ -4,7 +4,7 @@
 
 using namespace llmr;
 
-void Painter::renderText(TextBucket& bucket, const std::string& layer_name, const Tile::ID& id) {
+void Painter::renderText(TextBucket& bucket, const StyleClass &style_class, const std::string& layer_name, const Tile::ID& id) {
     // Abort early.
     if (pass == RenderPass::Opaque) return;
     if (!bucket.hasData()) return;

@@ -562,11 +562,11 @@ StyleClass StyleParser::parseClass(JSVal value) {
     }
 
     if (value.HasMember("color")) {
-        klass.set(StylePropertyKey::FillColor, parseColor(value["color"]));
+        klass.set(StylePropertyKey::Color, parseColor(value["color"]));
     }
 
     if (value.HasMember("transition-color")) {
-        klass.set(TransitionablePropertyKey::FillColor, parseTransition(value["transition-color"]));
+        klass.set(TransitionablePropertyKey::Color, parseTransition(value["transition-color"]));
     }
 
     if (value.HasMember("stroke")) {

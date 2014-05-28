@@ -62,8 +62,8 @@ void IconBucket::addFeature(const VectorTileFeature &feature, SpriteAtlas &sprit
     vertex_end = vertexBuffer.index();
 }
 
-void IconBucket::render(Painter& painter, const std::string& layer_name, const Tile::ID& id) {
-    painter.renderIcon(*this, layer_name, id);
+void IconBucket::render(Painter& painter, const StyleClass &style_class, const std::string& layer_name, const Tile::ID& id) {
+    painter.renderIcon(*this, style_class, layer_name, id);
 }
 
 bool IconBucket::hasData() const {

@@ -26,7 +26,7 @@ public:
     ~VectorTileData();
 
     virtual void parse();
-    virtual void render(Painter &painter, const LayerDescription& layer_desc);
+    virtual void render(Painter &painter, const LayerDescription& layer_desc, const StyleClass &style_class);
     virtual bool hasData(const LayerDescription& layer_desc) const;
 
 protected:

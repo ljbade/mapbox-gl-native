@@ -17,6 +17,7 @@ namespace llmr {
 class Map;
 class Painter;
 class LayerDescription;
+class StyleClass;
 
 class TileData : public std::enable_shared_from_this<TileData>,
              private util::noncopyable {
@@ -47,7 +48,7 @@ public:
 
     // Override this in the child class.
     virtual void parse() = 0;
-    virtual void render(Painter &painter, const LayerDescription& layer_desc) = 0;
+    virtual void render(Painter &painter, const LayerDescription& layer_desc, const StyleClass &style_class) = 0;
     virtual bool hasData(const LayerDescription& layer_desc) const = 0;
 
 

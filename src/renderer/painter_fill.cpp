@@ -140,7 +140,7 @@ void Painter::renderFill(FillBucket& bucket, const FillProperties& properties, c
     }
 }
 
-void Painter::renderFill(FillBucket& bucket, const std::string& layer_name, const Tile::ID& id) {
+void Painter::renderFill(FillBucket& bucket, const StyleClass &style_class, const std::string& layer_name, const Tile::ID& id) {
     // Abort early.
     if (!bucket.hasData()) return;
 

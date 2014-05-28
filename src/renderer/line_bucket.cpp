@@ -344,8 +344,8 @@ void LineBucket::addGeometry(const std::vector<Coordinate>& vertices) {
     }
 }
 
-void LineBucket::render(Painter& painter, const std::string& layer_name, const Tile::ID& id) {
-    painter.renderLine(*this, layer_name, id);
+void LineBucket::render(Painter& painter, const StyleClass &style_class, const std::string& layer_name, const Tile::ID& id) {
+    painter.renderLine(*this, style_class, layer_name, id);
 }
 
 bool LineBucket::hasData() const {

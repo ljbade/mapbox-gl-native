@@ -9,10 +9,11 @@
 namespace llmr {
 
 class Painter;
+class StyleClass;
 
 class Bucket : private util::noncopyable {
 public:
-    virtual void render(Painter& painter, const std::string& layer_name, const Tile::ID& id) = 0;
+    virtual void render(Painter& painter, const StyleClass &style_class, const std::string& layer_name, const Tile::ID& id) = 0;
     virtual bool hasData() const = 0;
     virtual ~Bucket() {}
 

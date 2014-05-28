@@ -4,36 +4,32 @@
 
 using namespace llmr;
 
-void Painter::renderLine(LineBucket& bucket, const std::string& layer_name, const Tile::ID& id) {
+void Painter::renderLine(LineBucket& bucket, const StyleClass &properties, const std::string& layer_name, const Tile::ID& id) {
     // Abort early.
-    if (pass == RenderPass::Opaque) return;
-    if (!bucket.hasData()) return;
-
-    const std::unordered_map<std::string, LineProperties> &line_properties = map.getStyle().computed.lines;
-    const std::unordered_map<std::string, LineProperties>::const_iterator line_properties_it = line_properties.find(layer_name);
-    if (line_properties_it == line_properties.end()) return;
-
-    const LineProperties& properties = line_properties_it->second;
-    if (!properties.enabled) return;
-
-    float width = properties.width;
-    float offset = properties.offset / 2;
+    float width = properties.get(StylePropertyKey::Width, StylePropertyDefault::Width());
+    float offset = properties.get(StylePropertyKey::Offset, StylePropertyDefault::Offset()) / 2;
 
     // These are the radii of the line. We are limiting it to 16, which will result
     // in a point size of 64 on retina.
     float inset = std::fmin((std::fmax(-1, offset - width / 2 - 0.5) + 1), 16.0f);
     float outset = std::fmin(offset + width / 2 + 0.5, 16.0f);
 
-    Color color = properties.color;
-    color[0] *= properties.opacity;
-    color[1] *= properties.opacity;
-    color[2] *= properties.opacity;
-    color[3] *= properties.opacity;
 
-    float dash_length = properties.dash_array[0];
-    float dash_gap = properties.dash_array[1];
+    float opacity = properties.get(StylePropertyKey::Opacity, StylePropertyDefault::Opacity());
+    Color color = properties.get(StylePropertyKey::Color, StylePropertyDefault::LineColor());
+    color[0] *= opacity;
+    color[1] *= opacity;
+    color[2] *= opacity;
+    color[3] *= opacity;
 
-    const mat4 &vtxMatrix = translatedMatrix(properties.translate, id, properties.translateAnchor);
+    float dash_length = properties.get(StylePropertyKey::DashArrayLand, StylePropertyDefault::DashArrayLand());
+    float dash_gap = properties.get(StylePropertyKey::DashArrayGap, StylePropertyDefault::DashArrayGap());
+
+    const float translate_x = properties.get(StylePropertyKey::TranslateX, StylePropertyDefault::TranslateX());
+    const float translate_y = properties.get(StylePropertyKey::TranslateY, StylePropertyDefault::TranslateY());
+    const TranslateAnchor translate_anchor = properties.get(StylePropertyKey::TranslateAnchor, StylePropertyDefault::TranslateAnchor());
+
+    const mat4 &vtxMatrix = translatedMatrix({{ translate_x, translate_y }}, id, translate_anchor);
 
     glDepthRange(strata, 1.0f);
 

@@ -65,14 +65,14 @@ void Source::drawClippingMasks() {
     }
 }
 
-void Source::render(const LayerDescription& layer_desc, const BucketDescription &bucket_desc) {
+void Source::render(const LayerDescription& layer_desc, const BucketDescription &bucket_desc, const StyleClass &style_class) {
     if (!enabled) return;
 
     gl::group group(std::string("layer: ") + layer_desc.name);
     for (const std::pair<const Tile::ID, std::unique_ptr<Tile>> &pair : tiles) {
         Tile &tile = *pair.second;
         if (tile.data && tile.data->state == TileData::State::parsed) {
-            painter.renderTileLayer(tile, layer_desc);
+            painter.renderTileLayer(tile, layer_desc, style_class);
         }
     }
 }

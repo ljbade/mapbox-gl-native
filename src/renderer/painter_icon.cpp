@@ -6,7 +6,7 @@
 
 using namespace llmr;
 
-void Painter::renderIcon(IconBucket& bucket, const std::string& layer_name, const Tile::ID& id) {
+void Painter::renderIcon(IconBucket& bucket, const StyleClass &style_class, const std::string& layer_name, const Tile::ID& id) {
     // Abort early.
     if (!bucket.hasData()) return;
     if (pass == RenderPass::Opaque) return;

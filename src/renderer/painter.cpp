@@ -171,12 +171,12 @@ void Painter::prepareTile(const Tile& tile) {
     glStencilFunc(GL_EQUAL, id, mask);
 }
 
-void Painter::renderTileLayer(const Tile& tile, const LayerDescription &layer_desc) {
+void Painter::renderTileLayer(const Tile& tile, const LayerDescription &layer_desc, const StyleClass &style_class) {
     assert(tile.data);
     if (tile.data->hasData(layer_desc)) {
         gl::group group(util::sprintf<32>("render %d/%d/%d", tile.id.z, tile.id.y, tile.id.z));
         prepareTile(tile);
-        tile.data->render(*this, layer_desc);
+        tile.data->render(*this, layer_desc, style_class);
         frameHistory.record(map.getAnimationTime(), map.getState().getNormalizedZoom());
     }
 }

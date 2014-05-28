@@ -14,7 +14,7 @@ DebugBucket::DebugBucket(DebugFontBuffer& fontBuffer)
     : fontBuffer(fontBuffer) {
 }
 
-void DebugBucket::render(Painter& painter, const std::string& /*layer_name*/, const Tile::ID& /*id*/) {
+void DebugBucket::render(Painter& painter, const StyleClass &style_class, const std::string& /*layer_name*/, const Tile::ID& /*id*/) {
     painter.renderDebugText(*this);
 }
 

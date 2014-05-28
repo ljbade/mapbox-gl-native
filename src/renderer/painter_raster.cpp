@@ -4,7 +4,7 @@
 
 using namespace llmr;
 
-void Painter::renderRaster(RasterBucket& bucket, const std::string& layer_name, const Tile::ID& /*id*/) {
+void Painter::renderRaster(RasterBucket& bucket, const StyleClass &style_class, const std::string& layer_name, const Tile::ID& /*id*/) {
     if (pass == RenderPass::Translucent) return;
 
     const std::unordered_map<std::string, RasterProperties> &raster_properties = map.getStyle().computed.rasters;

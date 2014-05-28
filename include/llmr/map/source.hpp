@@ -20,6 +20,7 @@ class Map;
 class TransformState;
 class Painter;
 class Texturepool;
+class StyleClass;
 
 class Source : public std::enable_shared_from_this<Source>, private util::noncopyable {
 public:
@@ -39,7 +40,7 @@ public:
     void updateMatrices(const TransformState &transform);
     void drawClippingMasks();
     size_t getTileCount() const;
-    void render(const LayerDescription& layer_desc, const BucketDescription &bucket_desc);
+    void render(const LayerDescription& layer_desc, const BucketDescription &bucket_desc, const StyleClass &style_class);
     void finishRender();
 
     std::forward_list<Tile::ID> getIDs() const;

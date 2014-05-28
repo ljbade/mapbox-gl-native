@@ -34,11 +34,11 @@ void VectorTileData::parse() {
     }
 }
 
-void VectorTileData::render(Painter &painter, const LayerDescription& layer_desc) {
+void VectorTileData::render(Painter &painter, const LayerDescription& layer_desc, const StyleClass &style_class) {
     auto databucket_it = buckets.find(layer_desc.bucket_name);
     if (databucket_it != buckets.end()) {
         assert(databucket_it->second);
-        databucket_it->second->render(painter, layer_desc.name, id);
+        databucket_it->second->render(painter, style_class, layer_desc.name, id);
     }
 }
 
