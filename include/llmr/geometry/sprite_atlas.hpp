@@ -2,6 +2,7 @@
 #define LLMR_GEOMETRY_SPRITE_ATLAS
 
 #include <llmr/geometry/binpack.hpp>
+#include <llmr/platform/gl.hpp>
 
 #include <string>
 #include <map>
@@ -31,7 +32,7 @@ public:
 
     // Returns the coordinates of a square icon. The getter also *creates* new square icons in the
     // atlas if they don't exist, but they'll be default-initialized with a a black circle.
-    Rect<dimension> getIcon(int size, const std::string &name);
+    Rect<dimension> getIcon(std::size_t size, const std::string &name);
 
     // Returns the coordinates of an image that is sourced from the sprite image.
     // This getter does not create images, as the dimension of the texture us unknown if the
@@ -65,7 +66,7 @@ private:
     char *data = nullptr;
     std::atomic<bool> dirty;
     uint32_t texture = 0;
-    uint32_t filter = 0;
+    GLint filter = 0;
     static const int buffer = 1;
 };
 

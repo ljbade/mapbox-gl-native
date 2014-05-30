@@ -37,8 +37,7 @@ bool SpriteAtlas::resize(const float newRatio) {
 
         dimension w = static_cast<dimension>(width * newRatio);
         dimension h = static_cast<dimension>(height * newRatio);
-        float s = std::pow(oldRatio / newRatio, 2);
-
+        float s = std::pow(oldRatio / newRatio, 2.0f);
         // Basic image scaling. TODO: Replace this with better image scaling.
         uint32_t *img_new = reinterpret_cast<uint32_t *>(data);
         uint32_t *img_old = reinterpret_cast<uint32_t *>(old_data);
@@ -86,7 +85,7 @@ void draw_circle(uint32_t *dst, const int dst_stride, const int dst_x, const int
         for (int x = 0; x < height; x++) {
             const float dist = util::length(float(x) / radius - 0.5f, float(y) / radius - 0.5f);
             const float t = util::smoothstep(0.5f, 0.5f - blur, dist);
-            const uint8_t alpha = t * 255;
+            const uint8_t alpha = static_cast<uint8_t>(std::round(t * 255.0f));
 
             uint32_t color = (uint32_t(r * t) << 0) |
                              (uint32_t(g * t) << 8) |
@@ -100,7 +99,7 @@ void draw_circle(uint32_t *dst, const int dst_stride, const int dst_x, const int
 Rect<SpriteAtlas::dimension> SpriteAtlas::allocateImage(size_t width, size_t height) {
     // We have to allocate a new area in the bin, and store an empty image in it.
     // Add a 1px border around every image.
-    Rect<dimension> rect = bin.allocate(width + 2 * buffer, height + 2 * buffer);
+    Rect<dimension> rect = bin.allocate(static_cast<uint16_t>(width + 2 * buffer),static_cast<uint16_t>(height + 2 * buffer));
     if (rect.w == 0) {
         return rect;
     }
@@ -113,7 +112,7 @@ Rect<SpriteAtlas::dimension> SpriteAtlas::allocateImage(size_t width, size_t hei
     return rect;
 }
 
-Rect<SpriteAtlas::dimension> SpriteAtlas::getIcon(const int size, const std::string &name) {
+Rect<SpriteAtlas::dimension> SpriteAtlas::getIcon(std::size_t size, const std::string &name) {
     std::lock_guard<std::mutex> lock(mtx);
 
     const std::string id = name + "-" + std::to_string(size);
@@ -248,7 +247,7 @@ void SpriteAtlas::bind(bool linear) {
         glBindTexture(GL_TEXTURE_2D, texture);
     }
 
-    GLuint filter_val = linear ? GL_LINEAR : GL_NEAREST;
+    GLint filter_val = linear ? GL_LINEAR : GL_NEAREST;
     if (filter_val != filter) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter_val);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter_val);

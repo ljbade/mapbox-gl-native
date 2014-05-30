@@ -48,7 +48,7 @@ template <> struct string_to_number<int64_t> {
 template <> struct string_to_number<uint64_t> {
     uint64_t operator()(std::string const &str) const {
         int val = string_to_bool(str);
-        return val < 0 ? std::stoull(str) : val;
+        return val < 0 ? std::stoull(str) : static_cast<uint64_t>(val);
     }
 };
 

@@ -43,8 +43,8 @@ Rect<uint16_t> GlyphAtlas::addGlyph(uint64_t tile_id, const std::string& face_na
         return Rect<uint16_t>{ 0, 0, 0, 0 };
     }
 
-    uint16_t buffered_width = glyph.metrics.width + buffer * 2;
-    uint16_t buffered_height = glyph.metrics.height + buffer * 2;
+    uint16_t buffered_width = static_cast<uint16_t>(glyph.metrics.width) + buffer * 2;
+    uint16_t buffered_height = static_cast<uint16_t>(glyph.metrics.height) + buffer * 2;
 
     // Add a 1px border around every image.
     uint16_t pack_width = buffered_width;

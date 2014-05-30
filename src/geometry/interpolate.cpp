@@ -16,7 +16,7 @@ Anchors interpolate(const std::vector<Coordinate> &vertices, float spacing,
         const Coordinate &a = *(it), b = *(it + 1);
 
         float segmentDist = util::dist<float>(a, b);
-        float angle = util::angle_to(b, a);
+        double angle = util::angle_to(b, a);
 
         while (markedDistance + spacing < distance + segmentDist) {
             markedDistance += spacing;

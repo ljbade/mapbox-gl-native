@@ -21,7 +21,7 @@ void VertexBuffer::bind() {
     if (buffer == 0) {
         glGenBuffers(1, &buffer);
         glBindBuffer(GL_ARRAY_BUFFER, buffer);
-        glBufferData(GL_ARRAY_BUFFER, array.size() * sizeof(vertex_type), array.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(array.size() * sizeof(vertex_type)), array.data(), GL_STATIC_DRAW);
     } else {
         glBindBuffer(GL_ARRAY_BUFFER, buffer);
     }

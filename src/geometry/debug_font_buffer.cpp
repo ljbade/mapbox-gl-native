@@ -16,7 +16,7 @@ void DebugFontBuffer::addText(const char *text, double left, double baseline, do
             continue;
         }
 
-        auto it = simplex.find((int)text[i]);
+        auto it = simplex.find(text[i]);
         if (it == simplex.end()) {
             continue;
         }
