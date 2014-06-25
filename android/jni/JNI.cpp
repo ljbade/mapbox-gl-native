@@ -1,3 +1,9 @@
+#define __STDINT_LIMITS
+#define __STDINT_MACROS
+#define __STDC_FORMAT_MACROS
+#include <cstdint>
+#include <cinttypes>
+
 #include <string>
 #include <locale>
 #include <codecvt>
@@ -276,6 +282,7 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
         { "nativeSetDebug", "(JZ)V", reinterpret_cast<void*>(&nativeSetDebug) },
         { "nativeToggleDebug", "(J)V", reinterpret_cast<void*>(&nativeToggleDebug) }}
     };
+    DEBUG("RegisterNatives using clazz 0x%016" PRIxPTR, reinterpret_cast<uintptr_t>(clazz));
     jint ret = env->RegisterNatives(clazz, methods.data(), methods.size());
     INFO("RegisterNatives returned %d", ret);
     if (env->RegisterNatives(clazz, methods.data(), methods.size()) < 0) {
